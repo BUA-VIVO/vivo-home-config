@@ -1,0 +1,71 @@
+# $This file is distributed under the terms of the license in LICENSE$
+
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix display: <http://vitro.mannlib.cornell.edu/ontologies/display/1.1#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix core: <http://vivoweb.org/ontology/core#> .
+@prefix vivoweb: <http://vivoweb.org/ontology#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+# academic departments datagetter
+
+<freemarker:lib-home-page.ftl> display:hasDataGetter display:buaDataGetter .
+<freemarker:lib-home-page.ftl> display:hasDataGetter display:exzellenzClustersDataGetter .
+<freemarker:lib-home-page.ftl> display:hasDataGetter display:buaProjectDataGetter .
+
+display:exzellenzClustersDataGetter
+    a <java:edu.cornell.mannlib.vitro.webapp.utils.dataGetter.SparqlQueryDataGetter> ;
+    display:saveToVar "exzellenzClusters" ;
+    display:query """
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX vivo: <http://vivoweb.org/ontology/core#>
+    PREFIX vivo-de: <http://vivoweb.org/ontology/core/de#>
+    PREFIX bua: <http://vivo.berlin-university-alliance.de/ontology/core/v1/bua/>
+    SELECT DISTINCT ?uri ?label 
+    WHERE 
+    {
+       ?uri a bua:Exzellenzcluster .
+       OPTIONAL { ?uri rdfs:label ?label . 
+       FILTER (lang(?label) = "en-us") } .
+     }
+     ORDER BY ?label
+     """ .
+
+display:buaDataGetter
+    a <java:edu.cornell.mannlib.vitro.webapp.utils.dataGetter.SparqlQueryDataGetter> ;
+    display:saveToVar "buaMitglieder" ;
+    display:query """
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX vivo: <http://vivoweb.org/ontology/core#>
+    PREFIX vivo-de: <http://vivoweb.org/ontology/core/de#>
+    PREFIX vivo-bua: <http://vivo.berlin-university-alliance.de/ontology/core/v1/vivo/bua#>
+    PREFIX bua: <http://vivo.berlin-university-alliance.de/ontology/core/v1/bua/>
+    PREFIX obo: <http://purl.obolibrary.org/obo/>
+
+    SELECT DISTINCT ?uri ?label 
+    WHERE 
+    {
+       bua:bua obo:BFO_0000051 ?uri .
+       OPTIONAL { ?uri rdfs:label ?label . 
+       FILTER (lang(?label) = "de-de") } .
+     }
+     ORDER BY ?label
+     """ .
+
+display:buaProjectDataGetter
+  a <java:edu.cornell.mannlib.vitro.webapp.utils.dataGetter.SparqlQueryDataGetter> ;
+  display:saveToVar "buaProjekte" ;
+  display:query """
+  PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+  PREFIX vivo: <http://vivoweb.org/ontology/core#>
+  
+  SELECT DISTINCT ?uri ?label
+  WHERE
+    {
+       ?uri a vivo:Project .
+       OPTIONAL { ?uri rdfs:label ?label} . 
+     }
+     ORDER BY ?label
+  """ .
+
